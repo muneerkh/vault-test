@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temenos
+  labels:
+    app: temenos
+spec:
+  selector:
+    matchLabels:
+      app: temenos
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-image: "docker.io/hashicorp/vault"
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/role: 'temenos'
+        vault.hashicorp.com/agent-inject-secret-issues-config.txt: 'temenos/data/t24'
+        vault.hashicorp.com/agent-inject-template-issues-config.txt: |
+          {{- with secret "temenos/data/t24" -}}
+          postgresql://{{ .Data.data.username }}:{{ .Data.data.password }}@postgres:5432/wizard
+          {{- end -}}
+      labels:
+        app: issues
+    spec:
+      serviceAccountName: issues
+      containers:
+        - name: issues
+          image: jweissig/app:0.0.1

@@ -61,14 +61,17 @@ oc apply --filename service-account-webapp.yml
 
 
 
-vault kv put secret/webapp/conhttps://developer.hashicorp.com/vault/tutorials/kubernetes/kubernetes-sidecarig username="static-user" \
+vault kv put secret/webapp/config username="static-user" \
     password="static-password"
 
 vault kv get secret/webapp/config
 
 vault policy write webapp - <<EOF
 path "secret/data/webapp/config" {
-  capabilities = ["read"]https://developer.hashicorp.com/vault/tutorials/kubernetes/kubernetes-sidecar
+  capabilities = ["read"]
+}
+EOF
+
 
 
 
